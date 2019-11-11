@@ -7,6 +7,11 @@ const mysql = require('mysql');
 // Parser for JSON
 app.use(bodyParser.json());
 
+// Swagger
+var swaggerUi = require('swagger-ui-express'),
+    swaggerDocument = require('./swagger.json');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 // Create DB pool
 var pool  = mysql.createPool({
     host     : '',
