@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const mysql = require('mysql');
+require('dotenv').config();
 
 // Parser for JSON
 app.use(bodyParser.json());
@@ -10,18 +11,18 @@ app.use(bodyParser.json());
 // Swagger
 var swaggerUi = require('swagger-ui-express'),
     swaggerDocument = require('./swagger.json');
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Create DB pool
 var pool  = mysql.createPool({
-    host     : '',
-    user     : '',
-    password : '',
-    database : ''
+    host     : process.env.HOST,
+    user     : process.env.USER,
+    password : process.env.PASSWORD,
+    database : process.env.DATABASE
 });
 
 // Return all Users
-app.get('/api/v1/users',(request, response) => {
+app.get('/v1/users',(request, response) => {
   let sql = "SELECT * FROM userdata";
   let query = pool.query(sql, (error, results) => {
     if(error) return sendResponse(response, 500, error, null);
@@ -30,7 +31,7 @@ app.get('/api/v1/users',(request, response) => {
 });
 
 // Return specific User
-app.get('/api/v1/users/:id',(request, response) => {
+app.get('/v1/users/:id',(request, response) => {
   let sql = "SELECT * FROM userdata WHERE id="+request.params.id;
   let query = pool.query(sql, (error, results) => {
     if(error || results.length < 1) return sendResponse(response, 404, "Not found.", null);
@@ -39,7 +40,7 @@ app.get('/api/v1/users/:id',(request, response) => {
 });
 
 // Create new User
-app.post('/api/v1/users',(request, response) => {
+app.post('/v1/users',(request, response) => {
   let data =
     {
       forename: request.body.forename,
@@ -55,7 +56,7 @@ app.post('/api/v1/users',(request, response) => {
 });
 
 // Update specific User
-app.put('/api/v1/users/:id',(request, response) => {
+app.put('/v1/users/:id',(request, response) => {
   let body = request.body;
   let sql = "UPDATE userdata SET forename='"+body.forename+"', name='"+body.name+"', email='"+body.email+"' WHERE id="+request.params.id;
   if (body.forename === undefined || body.name === undefined || body.email === undefined) {
@@ -68,7 +69,7 @@ app.put('/api/v1/users/:id',(request, response) => {
 });
 
 // Update forname of specific User
-app.put('/api/v1/users/:id/forename',(request, response) => {
+app.put('/v1/users/:id/forename',(request, response) => {
   let sql = "UPDATE userdata SET forename='"+request.body.forename+"' WHERE id="+request.params.id;
   let query = pool.query(sql, (error, results) => {
     if(error) return sendResponse(response, 400, error, null);
@@ -78,7 +79,7 @@ app.put('/api/v1/users/:id/forename',(request, response) => {
 });
 
 // Update name of specific User
-app.put('/api/v1/users/:id/name',(request, response) => {
+app.put('/v1/users/:id/name',(request, response) => {
   let sql = "UPDATE userdata SET name='"+request.body.name+"' WHERE id="+request.params.id;
   let query = pool.query(sql, (error, results) => {
     if(error) return sendResponse(response, 400, error, null);
@@ -88,7 +89,7 @@ app.put('/api/v1/users/:id/name',(request, response) => {
 });
 
 // Update email of specific User
-app.put('/api/v1/users/:id/email',(request, response) => {
+app.put('/v1/users/:id/email',(request, response) => {
   let sql = "UPDATE userdata SET email='"+request.body.email+"' WHERE id="+request.params.id;
   let query = pool.query(sql, (error, results) => {
     if(error) return sendResponse(response, 400, error, null);
@@ -98,7 +99,7 @@ app.put('/api/v1/users/:id/email',(request, response) => {
 });
 
 // Update password of specific User
-app.put('/api/v1/users/:id/password',(request, response) => {
+app.put('/v1/users/:id/password',(request, response) => {
   let sql = "UPDATE userdata SET password='"+request.body.password+"' WHERE id="+request.params.id;
   let query = pool.query(sql, (error, results) => {
     if(error) return sendResponse(response, 400, error, null);
@@ -108,7 +109,7 @@ app.put('/api/v1/users/:id/password',(request, response) => {
 });
 
 // Delete specific User
-app.delete('/api/v1/users/:id',(request, response) => {
+app.delete('/v1/users/:id',(request, response) => {
   let sql = "DELETE FROM userdata WHERE id="+request.params.id+"";
   let query = pool.query(sql, (error, results) => {
     if(error) throw error;
