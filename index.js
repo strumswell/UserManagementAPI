@@ -15,17 +15,19 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Create DB pool
 var pool  = mysql.createPool({
-    host     : process.env.HOST,
-    user     : process.env.USER,
-    password : process.env.PASSWORD,
-    database : process.env.DATABASE
+    host     : process.env.SQL_HOST,
+    user     : process.env.SQL_USER,
+    password : process.env.SQL_PASSWORD,
+    database : process.env.SQL_DATABASE
 });
 
 // Return all Users
 app.get('/v1/users',(request, response) => {
   let sql = "SELECT * FROM userdata";
   let query = pool.query(sql, (error, results) => {
+    //Somethings wrong interally
     if(error) return sendResponse(response, 500, error, null);
+    // All good
     sendResponse(response, 200, null, results);
   });
 });
@@ -34,77 +36,38 @@ app.get('/v1/users',(request, response) => {
 app.get('/v1/users/:id',(request, response) => {
   let sql = "SELECT * FROM userdata WHERE id="+request.params.id;
   let query = pool.query(sql, (error, results) => {
-    if(error || results.length < 1) return sendResponse(response, 404, "Not found.", null);
+    //Somethings wrong interally
+    if(error) return sendResponse(response, 500, error, null);
+    // Id is unkown and no changes were made
+    if(results.length < 1) return sendResponse(response, 404, "Not found.", null);
+    // All good
     sendResponse(response, 200, null, results);
   });
 });
 
 // Create new User
 app.post('/v1/users',(request, response) => {
-  let data =
-    {
-      forename: request.body.forename,
-      name: request.body.name,
-      email: request.body.email,
-      password: request.body.password
-    };
+  let data = request.body;
   let sql = "INSERT INTO userdata SET ?";
   let query = pool.query(sql, data,(error, results) => {
-    if(error) return sendResponse(response, 400, error, null);
+    // Missing or wrong attributes used
+    if(error) return sendResponse(response, 400, error.sqlMessage, null);
+    // All good
     sendResponse(response, 200, null, results);
   });
 });
 
 // Update specific User
 app.put('/v1/users/:id',(request, response) => {
-  let body = request.body;
-  let sql = "UPDATE userdata SET forename='"+body.forename+"', name='"+body.name+"', email='"+body.email+"' WHERE id="+request.params.id;
-  if (body.forename === undefined || body.name === undefined || body.email === undefined) {
-    return sendResponse(response, 400, "Missing attributes. (forename, name, email)", null);
-  }
-  let query = pool.query(sql, (error, results) => {
-    if(error) return sendResponse(response, 400, error, null);
-    sendResponse(response, 200, null, results);
-  });
-});
-
-// Update forname of specific User
-app.put('/v1/users/:id/forename',(request, response) => {
-  let sql = "UPDATE userdata SET forename='"+request.body.forename+"' WHERE id="+request.params.id;
-  let query = pool.query(sql, (error, results) => {
-    if(error) return sendResponse(response, 400, error, null);
-    if(request.body.forename === undefined) return sendResponse(response, 400, "Missing attribute forename.", null);
-    sendResponse(response, 200, null, results);
-  });
-});
-
-// Update name of specific User
-app.put('/v1/users/:id/name',(request, response) => {
-  let sql = "UPDATE userdata SET name='"+request.body.name+"' WHERE id="+request.params.id;
-  let query = pool.query(sql, (error, results) => {
-    if(error) return sendResponse(response, 400, error, null);
-    if(request.body.name === undefined) return sendResponse(response, 400, "Missing attribute name.", null);
-    sendResponse(response, 200, null, results);
-  });
-});
-
-// Update email of specific User
-app.put('/v1/users/:id/email',(request, response) => {
-  let sql = "UPDATE userdata SET email='"+request.body.email+"' WHERE id="+request.params.id;
-  let query = pool.query(sql, (error, results) => {
-    if(error) return sendResponse(response, 400, error, null);
-    if(request.body.email === undefined) return sendResponse(response, 400, "Missing attribute email.", null);
-    sendResponse(response, 200, null, results);
-  });
-});
-
-// Update password of specific User
-app.put('/v1/users/:id/password',(request, response) => {
-  let sql = "UPDATE userdata SET password='"+request.body.password+"' WHERE id="+request.params.id;
-  let query = pool.query(sql, (error, results) => {
-    if(error) return sendResponse(response, 400, error, null);
-    if(request.body.password === undefined) return sendResponse(response, 400, "Missing attribute password.", null);
-    sendResponse(response, 200, null, results);
+  let data = request.body;
+  let sql = "UPDATE userdata SET ? where id="+request.params.id;
+  let query = pool.query(sql, data,(error, results) => {
+    // Missing or wrong attributes used
+    if(error) return sendResponse(response, 400, error.sqlMessage, null);
+    // Id is unkown and no changes were made
+    if(results.affectedRows < 1) return sendResponse(response, 404, "User not found.", null);
+    // All good
+    sendResponse(response, 200, null, results.message);
   });
 });
 
@@ -112,9 +75,22 @@ app.put('/v1/users/:id/password',(request, response) => {
 app.delete('/v1/users/:id',(request, response) => {
   let sql = "DELETE FROM userdata WHERE id="+request.params.id+"";
   let query = pool.query(sql, (error, results) => {
-    if(error) throw error;
+    //Somethings wrong interally
+    if(error) return sendResponse(response, 500, error.sqlMessage, null);
+    // Id is unkown and no changes were made
+    if(results.affectedRows < 1) return sendResponse(response, 404, "User not found.", null);
+    // All good
     sendResponse(response, 200, null, results);
   });
+});
+
+// Catch wrong JSON in requests
+app.use(function (error, request, response, next) {
+  if (error instanceof SyntaxError) {
+    sendResponse(response, 400, "Invalid JSON.", null);
+  } else {
+    next();
+  }
 });
 
 //Server listening
