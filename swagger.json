@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "description": "Try out the user management api on this site.",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "title": "User Management"
   },
   "host": "api.bolte.cloud",
