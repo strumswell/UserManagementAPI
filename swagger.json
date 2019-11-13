@@ -5,8 +5,8 @@
     "version": "1.0.0",
     "title": "User Management"
   },
-  "host": "35.242.197.137:3000",
-  "basePath": "/api/v1/",
+  "host": "api.bolte.cloud",
+  "basePath": "/v1/",
   "tags": [
     {
       "name": "users",
