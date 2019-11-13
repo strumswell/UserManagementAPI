@@ -21,7 +21,7 @@ var pool  = mysql.createPool({
     database : process.env.DATABASE
 });
 
-// Return all Users to Requester
+// Return all Users
 app.get('/v1/users',(request, response) => {
   let sql = "SELECT * FROM userdata";
   let query = pool.query(sql, (error, results) => {
