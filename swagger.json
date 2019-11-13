@@ -34,6 +34,9 @@
         "responses": {
           "200": {
             "description": "Successful operation"
+          },
+          "500": {
+            "description": "Internal error"
           }
         }
       },
@@ -42,7 +45,7 @@
           "users"
         ],
         "summary": "Create a new user",
-        "description": "Creates a new user",
+        "description": "Creates a new user. The database will fill out id and created timestamp if left out.",
         "operationId": "createUsers",
         "consumes": [
           "application/json"
@@ -88,13 +91,75 @@
             "in": "path",
             "description": "id of user to return",
             "required": true,
-            "type": "integer",
-            "format": "int64"
+            "type": "integer"
           }
         ],
         "responses": {
           "200": {
             "description": "Successful operation"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Updated user",
+        "description": "Update a user. All attributes inside the body are optional.",
+        "operationId": "updateUser",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id of user that needs to be updated",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Updated user object",
+            "required": true,
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "forename": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "created": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad request"
           },
           "404": {
             "description": "User not found"
@@ -127,231 +192,9 @@
           },
           "404": {
             "description": "User not found"
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "users"
-        ],
-        "summary": "Updated user",
-        "description": "Update a user's forname, name and email",
-        "operationId": "updateUser",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "id of user that needs to be updated",
-            "required": true,
-            "type": "integer"
           },
-          {
-            "in": "body",
-            "name": "body",
-            "description": "Updated user object",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Users"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "404": {
-            "description": "User not found"
-          }
-        }
-      }
-    },
-    "/users/{id}/forename": {
-      "put": {
-        "tags": [
-          "users"
-        ],
-        "summary": "Update forname",
-        "description": "Update a user's forname",
-        "operationId": "updateUserForename",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "id of user that needs to be updated",
-            "required": true,
-            "type": "integer"
-          },
-          {
-            "in": "body",
-            "name": "body",
-            "description": "New forename",
-            "required": true,
-            "schema": {
-              "properties": {
-                "forename": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "404": {
-            "description": "User not found"
-          }
-        }
-      }
-    },
-    "/users/{id}/name": {
-      "put": {
-        "tags": [
-          "users"
-        ],
-        "summary": "Update name",
-        "description": "Update a user's name",
-        "operationId": "updateUserName",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "id of user that needs to be updated",
-            "required": true,
-            "type": "integer"
-          },
-          {
-            "in": "body",
-            "name": "body",
-            "description": "New name",
-            "required": true,
-            "schema": {
-              "properties": {
-                "name": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "404": {
-            "description": "User not found"
-          }
-        }
-      }
-    },
-    "/users/{id}/email": {
-      "put": {
-        "tags": [
-          "users"
-        ],
-        "summary": "Update email",
-        "description": "Update a user's email address",
-        "operationId": "updateUserEmail",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "id of user that needs to be updated",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "body",
-            "name": "body",
-            "description": "New email address",
-            "required": true,
-            "schema": {
-              "properties": {
-                "email": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "404": {
-            "description": "User not found"
-          }
-        }
-      }
-    },
-    "/users/{id}/password": {
-      "put": {
-        "tags": [
-          "users"
-        ],
-        "summary": "Update password",
-        "description": "Update a user's password",
-        "operationId": "updateUserPassword",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "id of user that needs to be updated",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "body",
-            "name": "body",
-            "description": "Updated user object",
-            "required": true,
-            "schema": {
-              "properties": {
-                "password": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "404": {
-            "description": "User not found"
+          "500": {
+            "description": "Internal error"
           }
         }
       }
@@ -361,6 +204,9 @@
     "Users": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "integer"
+        },
         "forename": {
           "type": "string"
         },
@@ -369,8 +215,20 @@
         },
         "email": {
           "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string"
         }
       },
+      "required": [
+        "forename",
+        "name",
+        "email",
+        "password"
+      ],
       "xml": {
         "name": "Users"
       }
