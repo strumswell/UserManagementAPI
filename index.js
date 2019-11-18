@@ -22,8 +22,8 @@ var pool  = mysql.createPool({
 });
 
 // Return all Users
-app.get('/v1/users',(request, response) => {
-  let sql = "SELECT * FROM userdata";
+app.get('/v1/orders',(request, response) => {
+  let sql = "SELECT * FROM orders";
   let query = pool.query(sql, (error, results) => {
     //Somethings wrong interally
     if(error) return sendResponse(response, 500, error, null);
