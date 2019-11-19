@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "description": "Try out the user management api on this site.",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "title": "User Management"
   },
   "host": "api.bolte.cloud",
@@ -74,6 +74,45 @@
         }
       }
     },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Login a user",
+        "description": "Login and get your user id for further work.",
+        "operationId": "loginUser",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Updated user object",
+            "required": true,
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    },
     "/users/{id}": {
       "get": {
         "tags": [
@@ -114,7 +153,6 @@
         "description": "Update a user. All attributes inside the body are optional.",
         "operationId": "updateUser",
         "produces": [
-          "application/xml",
           "application/json"
         ],
         "parameters": [

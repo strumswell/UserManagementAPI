@@ -1,4 +1,5 @@
 const pool = require('../util/db');
+const bcrypt = require('bcrypt');
 
 // Send standardized response
 function sendResponse(response, status, error, result) {
@@ -45,9 +46,33 @@ module.exports = (app) => {
     });
   });
 
+  // Create new User
+  app.post('/v1/users/login',(request, response) => {
+    let data = request.body;
+    let sql = "SELECT id,password from userdata where email='"+request.body.email+"'";
+    let query = pool.query(sql, (error, results) => {
+      // Missing or wrong attributes used
+      if(error) console.log(error);
+      // Check for password validity
+      if(bcrypt.compareSync(request.body.password, results[0].password)) {
+        sendResponse(response, 200, null, {"userid": results[0].id});
+      } else {
+        sendResponse(response, 200, "Authentication failed!", null);
+      }
+    });
+  });
+
   // Update specific User
   app.put('/v1/users/:id',(request, response) => {
     let data = request.body;
+    let password = data.password;
+    // Wanna change password?
+    if (password !== undefined) {
+      // Hash password and change request body
+      let hashed_password = bcrypt.hashSync(password, 10);
+      data.password = hashed_password;
+    }
+    // Update DB
     let sql = "UPDATE userdata SET ? where id="+request.params.id;
     let query = pool.query(sql, data,(error, results) => {
       // Missing or wrong attributes used
