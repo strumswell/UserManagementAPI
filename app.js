@@ -4,7 +4,6 @@ const app = express();
 
 // Require routes
 require('./routes/users')(app);
-require('./routes/session')(app);
 require('./routes/swagger')(app);
 require('./routes/index')(app);
 

@@ -4,6 +4,7 @@ function sendResponse(response, status, error, result) {
 }
 
 module.exports = (app) => {
+  // Standard route
   app.use('/', (request, response) => {
     response.send("Welcome! You can find the documentation @ /docs");
   });
