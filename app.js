@@ -1,12 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const app = express();
+const helmet = require('helmet')
+const app = express()
 
 // Parser for JSON
 app.use(bodyParser.json());
 // Enable CORS
 app.use(cors());
+// Put helmet on...
+app.use(helmet());
 
 // Require routes
 require('./routes/users')(app);
