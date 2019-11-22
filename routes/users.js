@@ -37,6 +37,9 @@ module.exports = (app) => {
   // Create new User
   app.post('/v1/users',(request, response) => {
     let data = request.body;
+    // Change plain text to hash
+    data.password = bcrypt.hashSync(data.password, 10);
+    // Build query and execute
     let sql = "INSERT INTO userdata SET ?";
     let query = pool.query(sql, data,(error, results) => {
       // Missing or wrong attributes used
@@ -46,7 +49,7 @@ module.exports = (app) => {
     });
   });
 
-  // Create new User
+  // Login user ; NOTE: security is out of scope for this PoC and therefore returns the userid
   app.post('/v1/users/login',(request, response) => {
     let data = request.body;
     let sql = "SELECT id,password from userdata where email='"+request.body.email+"'";
