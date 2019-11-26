@@ -12,7 +12,7 @@ function sendResponse(response, status, error, result) {
 module.exports = (app) => {
   // Return all Users
   app.get('/v1/users',(request, response) => {
-    let sql = "SELECT * FROM userdata_2";
+    let sql = "SELECT * FROM userdata";
     let query = pool.query(sql, (error, results) => {
       //Somethings wrong interally
       if(error) return sendResponse(response, 500, error, null);
@@ -22,8 +22,8 @@ module.exports = (app) => {
   });
 
   // Return specific User
-  app.get('/v1/users/:uuid',(request, response) => {
-    let sql = "SELECT * FROM userdata_2 WHERE uuid="+request.params.id;
+  app.get('/v1/users/:id',(request, response) => {
+    let sql = "SELECT * FROM userdata WHERE id="+request.params.id;
     let query = pool.query(sql, (error, results) => {
       //Somethings wrong interally
       if(error) return sendResponse(response, 500, error, null);
@@ -40,7 +40,7 @@ module.exports = (app) => {
     // Change plain text to hash
     data.password = bcrypt.hashSync(data.password, 10);
     // Build query and execute
-    let sql = "INSERT INTO userdata_2 SET ?";
+    let sql = "INSERT INTO userdata SET ?";
     let query = pool.query(sql, data,(error, results) => {
       // Missing or wrong attributes used
       if(error) return sendResponse(response, 400, error.sqlMessage, null);
@@ -52,7 +52,7 @@ module.exports = (app) => {
   // Login user ; NOTE: security is out of scope for this PoC and therefore returns the userid
   app.post('/v1/users/login',(request, response) => {
     let data = request.body;
-    let sql = "SELECT uuid,password from userdata_2 where email='"+request.body.email+"'";
+    let sql = "SELECT id,password from userdata where email='"+request.body.email+"'";
     let query = pool.query(sql, (error, results) => {
       // Missing or wrong attributes used
       if(error) console.log(error);
@@ -66,7 +66,7 @@ module.exports = (app) => {
   });
 
   // Update specific User
-  app.put('/v1/users/:uuid',(request, response) => {
+  app.put('/v1/users/:id',(request, response) => {
     let data = request.body;
     let password = data.password;
     // Wanna change password?
@@ -76,7 +76,7 @@ module.exports = (app) => {
       data.password = hashed_password;
     }
     // Update DB
-    let sql = "UPDATE userdata_2 SET ? where uuid="+request.params.id;
+    let sql = "UPDATE userdata SET ? where id="+request.params.id;
     let query = pool.query(sql, data,(error, results) => {
       // Missing or wrong attributes used
       if(error) return sendResponse(response, 400, error.sqlMessage, null);
@@ -88,8 +88,8 @@ module.exports = (app) => {
   });
 
   // Delete specific User
-  app.delete('/v1/users/:uuid',(request, response) => {
-    let sql = "DELETE FROM userdata_2 WHERE uuid="+request.params.id+"";
+  app.delete('/v1/users/:id',(request, response) => {
+    let sql = "DELETE FROM userdata WHERE id="+request.params.id+"";
     let query = pool.query(sql, (error, results) => {
       //Somethings wrong interally
       if(error) return sendResponse(response, 500, error.sqlMessage, null);
