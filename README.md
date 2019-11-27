@@ -15,6 +15,8 @@ SQL_HOST=''
 SQL_USER=''
 SQL_PASSWORD=''
 SQL_DATABASE=''
+MAIL_USER=''
+MAIL_PASSWORD=''
 ```
 4. Execute the app with `node app.js`
 

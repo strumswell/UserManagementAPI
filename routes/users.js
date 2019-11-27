@@ -1,5 +1,6 @@
 const pool = require('../util/db');
 const bcrypt = require('bcrypt');
+const mailer = require('../util/confirmMail');
 
 // Send standardized response
 function sendResponse(response, status, error, result) {
@@ -45,7 +46,20 @@ module.exports = (app) => {
       // Missing or wrong attributes used
       if(error) return sendResponse(response, 400, error.sqlMessage, null);
       // All good
+      mailer.sendEmailConfirmation(request.body.email, results.insertId);
       sendResponse(response, 200, null, results);
+    });
+  });
+
+  // Confirm E-Mail
+  app.get('/v1/users/:id/confirmEmail',(request, response) => {
+    // Build query and execute
+    let sql = "UPDATE userdata SET email_verified=true where id="+request.params.id;
+    let query = pool.query(sql,(error, results) => {
+      // Missing or wrong attributes used
+      if(error) return sendResponse(response, 404, "User not found.", null);
+      // All good
+      response.send("Deine E-Mail-Adresse wurde bestätigt!");
     });
   });
 
