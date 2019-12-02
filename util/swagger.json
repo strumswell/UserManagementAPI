@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "description": "Try out the user management api on this site.",
-    "version": "1.3.0",
+    "version": "1.3.1",
     "title": "User Management"
   },
   "host": "api.bolte.cloud",
@@ -36,7 +36,7 @@
             "description": "Successful operation"
           },
           "500": {
-            "description": "Internal error"
+            "description": "Internal server error"
           }
         }
       },
@@ -45,7 +45,7 @@
           "users"
         ],
         "summary": "Create a new user",
-        "description": "Creates a new user. The database will fill out id and created timestamp if left out.",
+        "description": "Creates a new user.",
         "operationId": "createUsers",
         "consumes": [
           "application/json"
@@ -60,7 +60,19 @@
             "description": "User that needs to be created",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/Users"
+              "allOf": [
+                {
+                  "$ref": "#/definitions/Users"
+                },
+                {
+                  "required": [
+                    "forename",
+                    "name",
+                    "email",
+                    "password"
+                  ]
+                }
+              ]
             }
           }
         ],
@@ -70,6 +82,9 @@
           },
           "400": {
             "description": "Bad request"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
@@ -97,18 +112,30 @@
             "schema": {
               "properties": {
                 "email": {
-                  "type": "string"
+                  "type": "string",
+                  "example": "bolter@thh-brandenburg.de"
                 },
                 "password": {
-                  "type": "string"
+                  "type": "string",
+                  "example": "MySuperSecretPassword"
                 }
-              }
+              },
+              "required": [
+                "email",
+                "password"
+              ]
             }
           }
         ],
         "responses": {
           "200": {
             "description": "Successful operation"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
@@ -141,7 +168,7 @@
             "description": "User not found"
           },
           "500": {
-            "description": "Internal error"
+            "description": "Internal server error"
           }
         }
       },
@@ -169,41 +196,7 @@
             "description": "Updated user object",
             "required": true,
             "schema": {
-              "properties": {
-                "forename": {
-                  "type": "string"
-                },
-                "name": {
-                  "type": "string"
-                },
-                "email": {
-                  "type": "string"
-                },
-                "password": {
-                  "type": "string"
-                },
-                "birthday": {
-                  "type": "string"
-                },
-                "postcode": {
-                  "type": "string"
-                },
-                "city": {
-                  "type": "string"
-                },
-                "street": {
-                  "type": "string"
-                },
-                "house_number": {
-                  "type": "integer"
-                },
-                "role": {
-                  "type": "string"
-                },
-                "newsletter_subscribed": {
-                  "type": "boolean"
-                }
-              }
+              "$ref": "#/definitions/Users"
             }
           }
         ],
@@ -216,6 +209,9 @@
           },
           "404": {
             "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       },
@@ -277,6 +273,9 @@
           },
           "404": {
             "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
@@ -286,55 +285,51 @@
     "Users": {
       "type": "object",
       "properties": {
-        "uuid": {
-          "type": "string"
-        },
         "forename": {
-          "type": "string"
+          "type": "string",
+          "example": "Philipp"
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "example": "Bolte"
         },
         "email": {
-          "type": "string"
+          "type": "string",
+          "example": "bolter@thh-brandenburg.de"
         },
         "password": {
-          "type": "string"
+          "type": "string",
+          "example": "MySuperSecretPassword"
         },
         "birthday": {
-          "type": "string"
+          "type": "string",
+          "example": "2019-03-01"
         },
         "postcode": {
-          "type": "string"
+          "type": "string",
+          "example": ""
         },
         "city": {
-          "type": "string"
+          "type": "string",
+          "example": ""
         },
         "street": {
-          "type": "string"
+          "type": "string",
+          "example": ""
         },
         "house_number": {
-          "type": "integer"
+          "type": "integer",
+          "example": ""
         },
         "role": {
-          "type": "string"
-        },
-        "created": {
-          "type": "string"
-        },
-        "email_verified": {
-          "type": "boolean"
+          "type": "string",
+          "example": ""
         },
         "newsletter_subscribed": {
-          "type": "boolean"
+          "type": "boolean",
+          "example": "true"
         }
       },
-      "required": [
-        "forename",
-        "name",
-        "email",
-        "password"
-      ],
       "xml": {
         "name": "Users"
       }
