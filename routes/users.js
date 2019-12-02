@@ -1,6 +1,7 @@
 const pool = require('../util/db');
 const bcrypt = require('bcrypt');
 const mailer = require('../util/confirmMail');
+const uuidv4 = require('uuid/v4');
 
 // Send standardized response
 function sendResponse(response, status, error, result) {
@@ -23,8 +24,8 @@ module.exports = (app) => {
   });
 
   // Return specific User
-  app.get('/v1/users/:id',(request, response) => {
-    let sql = "SELECT * FROM userdata WHERE id="+request.params.id;
+  app.get('/v1/users/:uuid',(request, response) => {
+    let sql = "SELECT * FROM userdata WHERE uuid='"+request.params.uuid+"'";
     let query = pool.query(sql, (error, results) => {
       //Somethings wrong interally, has "code" when DB doesn't respond. Body of node error!
       if(error) return sendResponse(response, 500, "Internal server error.", null);
@@ -33,7 +34,7 @@ module.exports = (app) => {
       // We don't want to share password hash
       delete results[0].password;
       // All good
-      sendResponse(response, 200, null, results);
+      sendResponse(response, 200, null, results[0]);
     });
   });
 
@@ -57,15 +58,15 @@ module.exports = (app) => {
       //Somethings wrong interally, has "code" when DB doesn't respond. Body of node error!
       if(error) return sendResponse(response, 500, "Internal server error.", null);
       // All good
-      mailer.sendEmailConfirmation(request.body.email, results.insertId);
-      sendResponse(response, 200, null, results);
+      mailer.sendEmailConfirmation(request.body.email, data.uuid, data.forename);
+      sendResponse(response, 200, null, {"uuid": data.uuid});
     });
   });
 
   // Confirm E-Mail
-  app.get('/v1/users/:id/confirmEmail',(request, response) => {
+  app.get('/v1/users/:uuid/confirmEmail',(request, response) => {
     // Build query and execute
-    let sql = "UPDATE userdata SET email_verified=true where id="+request.params.id;
+    let sql = "UPDATE userdata SET email_verified=true where uuid='"+request.params.uuid+"'";
     let query = pool.query(sql,(error, results) => {
       //Somethings wrong interally, has "code" when DB doesn't respond. Body of node error!
       if(error) return sendResponse(response, 500, "Internal server error.", null);
@@ -79,7 +80,7 @@ module.exports = (app) => {
   // Login user ; NOTE: security is out of scope for this PoC and therefore returns the userid
   app.post('/v1/users/login',(request, response) => {
     let data = request.body;
-    let sql = "SELECT id,password from userdata where email='"+request.body.email+"'";
+    let sql = "SELECT uuid,password from userdata where email='"+request.body.email+"'";
     let query = pool.query(sql, (error, results) => {
       //Somethings wrong interally, has "code" when DB doesn't respond. Body of node error!
       if(error) return sendResponse(response, 500, "Internal server error.", null);
@@ -87,7 +88,7 @@ module.exports = (app) => {
       if(results.length < 1) return sendResponse(response, 404, "User not found.", null);
       // Check for password validity
       if(bcrypt.compareSync(request.body.password, results[0].password)) {
-        sendResponse(response, 200, null, {"userid": results[0].id});
+        sendResponse(response, 200, null, {"uuid": results[0].uuid});
       } else {
         sendResponse(response, 200, "Authentication failed!", null);
       }
@@ -95,7 +96,7 @@ module.exports = (app) => {
   });
 
   // Update specific User
-  app.put('/v1/users/:id',(request, response) => {
+  app.put('/v1/users/:uuid',(request, response) => {
     let data = request.body;
     let password = data.password;
     // Wanna change password?
@@ -114,13 +115,13 @@ module.exports = (app) => {
       // Id is unkown and no changes were made
       if(results.affectedRows < 1) return sendResponse(response, 404, "User not found.", null);
       // All good
-      sendResponse(response, 200, null, results.message);
+      sendResponse(response, 200, null, "User updated");
     });
   });
 
   // Delete specific User
-  app.delete('/v1/users/:id',(request, response) => {
-    let sql = "DELETE FROM userdata WHERE id="+request.params.id+"";
+  app.delete('/v1/users/:uuid',(request, response) => {
+    let sql = "DELETE FROM userdata WHERE uuid='"+request.params.uuid+"'";
     let query = pool.query(sql, (error, results) => {
       //Somethings wrong interally
       if(error) return sendResponse(response, 500, "Internal server error.", null);
