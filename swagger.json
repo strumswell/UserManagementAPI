@@ -10,7 +10,7 @@
   "tags": [
     {
       "name": "carts",
-      "description": "Current cart"
+      "description": "All carts"
     },
     {
       "name": "orders",
@@ -30,8 +30,8 @@
         "tags": [
           "carts"
         ],
-        "summary": "Get current cart",
-        "description": "Returns current cart",
+        "summary": "Get all carts",
+        "description": "Returns all carts",
         "operationId": "getCart",
         "consumes": [
           "application/json"
@@ -55,7 +55,7 @@
           "carts"
         ],
         "summary": "Get a specific cart",
-        "description": "Get cart of a specific user",
+        "description": "Get current cart of a specific user",
         "parameters": [
           {
             "name": "userid",
@@ -79,7 +79,7 @@
           "carts"
         ],
         "summary": "Updated cart",
-        "description": "Updated current cart. Removed it's cart content or added content.",
+        "description": "Updated current cart. Removed it's carts content or added content.",
         "operationId": "updateCart",
         "produces": [
           "application/json"
@@ -359,14 +359,14 @@
         "tags": [
           "users"
         ],
-        "summary": "Get a specific order",
-        "description": "Get a specific order",
+        "summary": "Get specific orders",
+        "description": "Get all Orders of a specific user",
         "operationId": "getOrdersOfUser",
         "parameters": [
           {
             "name": "userid",
             "in": "path",
-            "description": "id of order to return",
+            "description": "id of user to return his orders",
             "required": true,
             "type": "integer"
           }
