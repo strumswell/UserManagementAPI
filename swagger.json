@@ -1,30 +1,208 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "Try out the user management api on this site.",
-    "version": "1.1.0",
-    "title": "User Management"
+    "description": "Try out the order management api on this site.",
+    "version": "1.0.0",
+    "title": "Order Management"
   },
-  "host": "api.bolte.cloud",
-  "basePath": "/v1/",
+  "host": "orderservice.404.mn",
+  "basePath": "/api/v1/",
   "tags": [
     {
+      "name": "carts",
+      "description": "Current cart"
+    },
+    {
+      "name": "orders",
+      "description": "All orders"
+    },
+    {
       "name": "users",
-      "description": "All user data"
+      "description": "Users Orders"
     }
   ],
   "schemes": [
-    "https"
+    "http"
   ],
   "paths": {
-    "/users": {
+    "/carts": {
       "get": {
         "tags": [
-          "users"
+          "carts"
         ],
-        "summary": "Get all users",
-        "description": "Returns all users",
-        "operationId": "getUsers",
+        "summary": "Get current cart",
+        "description": "Returns current cart",
+        "operationId": "getCart",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "500": {
+            "description": "Internal error"
+          }
+        }
+      }
+    },
+    "/carts/{userid}": {
+      "get": {
+        "tags": [
+          "carts"
+        ],
+        "summary": "Get a specific cart",
+        "description": "Get cart of a specific user",
+        "parameters": [
+          {
+            "name": "userid",
+            "in": "path",
+            "description": "Id of user that cart needs to be returned",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "carts"
+        ],
+        "summary": "Updated cart",
+        "description": "Updated current cart. Removed it's cart content or added content.",
+        "operationId": "updateCart",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userid",
+            "in": "path",
+            "description": "id of user that is needed to update its cart",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "content",
+            "description": "Updated content objects",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Carts"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "carts"
+        ],
+        "summary": "Create new cart",
+        "description": "Creates cart for a new or specific user",
+        "operationId": "postCart",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userid",
+            "in": "path",
+            "description": "Id of user that is needed to create its cart",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Carts that needs to be created for a specific user",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Carts"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "carts"
+        ],
+        "summary": "Empty cart",
+        "description": "Delete current content in cart.",
+        "operationId": "deleteCart",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userid",
+            "in": "path",
+            "description": "Id of user that is needed to delete its cart",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "content",
+            "description": "Delete content objects",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Carts"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/orders": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Get all orders",
+        "description": "Returns all orders",
+        "operationId": "getOrders",
         "consumes": [
           "application/json"
         ],
@@ -42,11 +220,11 @@
       },
       "post": {
         "tags": [
-          "users"
+          "orders"
         ],
-        "summary": "Create a new user",
-        "description": "Creates a new user. The database will fill out id and created timestamp if left out.",
-        "operationId": "createUsers",
+        "summary": "Create new order",
+        "description": "Creates a new order",
+        "operationId": "postOrder",
         "consumes": [
           "application/json"
         ],
@@ -57,10 +235,10 @@
           {
             "in": "body",
             "name": "body",
-            "description": "User that needs to be created",
+            "description": "Order that needs to be created",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/Users"
+              "$ref": "#/definitions/Orders"
             }
           }
         ],
@@ -74,116 +252,49 @@
         }
       }
     },
-    "/users/{id}": {
+    "/orders/{orderid}": {
       "get": {
         "tags": [
-          "users"
+          "orders"
         ],
-        "summary": "Find user by id",
-        "description": "Returns a single user",
-        "operationId": "getUserById",
-        "produces": [
-          "application/json"
-        ],
+        "summary": "Get a specific order",
+        "description": "Get a specific order",
+        "operationId": "getOrderById",
         "parameters": [
           {
-            "name": "id",
+            "name": "orderid",
             "in": "path",
-            "description": "id of user to return",
+            "description": "id of order to return",
             "required": true,
             "type": "integer"
           }
         ],
         "responses": {
           "200": {
-            "description": "Successful operation"
-          },
-          "404": {
-            "description": "User not found"
+            "description": "OK"
           },
           "500": {
-            "description": "Internal error"
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "users"
-        ],
-        "summary": "Updated user",
-        "description": "Update a user. All attributes inside the body are optional.",
-        "operationId": "updateUser",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "id of user that needs to be updated",
-            "required": true,
-            "type": "integer"
-          },
-          {
-            "in": "body",
-            "name": "body",
-            "description": "Updated user object",
-            "required": true,
-            "schema": {
-              "properties": {
-                "id": {
-                  "type": "integer"
-                },
-                "forename": {
-                  "type": "string"
-                },
-                "name": {
-                  "type": "string"
-                },
-                "email": {
-                  "type": "string"
-                },
-                "password": {
-                  "type": "string"
-                },
-                "created": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "404": {
-            "description": "User not found"
+            "description": "Internal Error"
           }
         }
       },
       "delete": {
         "tags": [
-          "users"
+          "orders"
         ],
-        "summary": "Deletes user",
-        "description": "Delete a user",
-        "operationId": "deleteUser",
+        "summary": "Deletes order",
+        "description": "Delete order if it is canceled",
+        "operationId": "deleteOrder",
         "produces": [
           "application/json"
         ],
         "parameters": [
           {
-            "name": "id",
+            "name": "orderid",
             "in": "path",
-            "description": "id of user to delete",
+            "description": "id of order to delete",
             "required": true,
-            "type": "integer",
-            "format": "int64"
+            "type": "integer"
           }
         ],
         "responses": {
@@ -191,51 +302,157 @@
             "description": "Successful operation"
           },
           "404": {
-            "description": "User not found"
+            "description": "Order not found"
           },
           "500": {
             "description": "Internal error"
+          }
+        }
+      }
+    },
+    "/orders/{orderid}/orderstatus": {
+      "put": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Update orders status",
+        "description": "Update only orders status",
+        "operationId": "updateOrderStatus",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "orderid",
+            "in": "path",
+            "description": "orderstatus to update",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "orderstatus",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "in Bearbeitung",
+                "Versendet",
+                "Zugestellt",
+                "Zurückgesendet"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      }
+    },
+    "/users/{userid}/orders": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get a specific order",
+        "description": "Get a specific order",
+        "operationId": "getOrdersOfUser",
+        "parameters": [
+          {
+            "name": "userid",
+            "in": "path",
+            "description": "id of order to return",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Error"
           }
         }
       }
     }
   },
   "definitions": {
-    "Users": {
+    "Carts": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "integer"
-        },
-        "forename": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        },
-        "created": {
-          "type": "string"
+        "content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "productid": {
+                "type": "integer"
+              },
+              "productquantity": {
+                "type": "integer"
+              }
+            }
+          }
         }
       },
       "required": [
-        "forename",
-        "name",
-        "email",
-        "password"
+        "userid",
+        "content"
       ],
       "xml": {
-        "name": "Users"
+        "name": "Cart"
+      }
+    },
+    "Orders": {
+      "type": "object",
+      "properties": {
+        "orderid": {
+          "type": "integer"
+        },
+        "userid": {
+          "type": "integer"
+        },
+        "orderstatus": {
+          "type": "string"
+        },
+        "orderdate": {
+          "type": "string"
+        },
+        "content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "productid": {
+                "type": "integer"
+              },
+              "productquantity": {
+                "type": "integer"
+              },
+              "productprice": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "userid",
+        "content"
+      ],
+      "xml": {
+        "name": "Orders"
       }
     }
   },
   "externalDocs": {
     "description": "GitHub Repository of API",
-    "url": "https://github.com/strumswell/UserManagement-API"
+    "url": "https://github.com/THB-Team8/Order-Management-API"
   }
 }
