@@ -359,7 +359,7 @@
         "tags": [
           "users"
         ],
-        "summary": "Get specific orders",
+        "summary": "Get all orders for specific user",
         "description": "Get all Orders of a specific user",
         "operationId": "getOrdersOfUser",
         "parameters": [
