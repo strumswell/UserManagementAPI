@@ -328,6 +328,14 @@
         "newsletter_subscribed": {
           "type": "boolean",
           "example": "true"
+        },
+        "avatar": {
+          "type": "string",
+          "example": ""
+        },
+        "bio": {
+          "type": "string",
+          "example": ""
         }
       },
       "xml": {
