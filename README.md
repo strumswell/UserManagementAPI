@@ -17,6 +17,9 @@ SQL_PASSWORD=''
 SQL_DATABASE=''
 MAIL_USER=''
 MAIL_PASSWORD=''
+API_BASE_URL='https://api.example.com/'
+AVATAR_LOCAL_PATH=''
+AVATAR_PUBLIC_PATH='http://avatar.example.com'
 ```
 4. Execute the app with `node app.js`
 
