@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const helmet = require('helmet')
 const app = express()
+require('dotenv').config();
 
 // Parser for JSON
 app.use(bodyParser.json());

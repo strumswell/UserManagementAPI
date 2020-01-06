@@ -2,6 +2,27 @@ const pool = require('../util/db');
 const bcrypt = require('bcrypt');
 const mailer = require('../util/confirmMail');
 const uuidv4 = require('uuid/v4');
+const multer  = require('multer');
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, process.env.AVATAR_LOCAL_PATH);
+    },
+    filename: (req, file, cb) => {
+      console.log(file);
+      var filetype = '';
+      if(file.mimetype === 'image/gif') {
+        filetype = 'gif';
+      }
+      if(file.mimetype === 'image/png') {
+        filetype = 'png';
+      }
+      if(file.mimetype === 'image/jpeg') {
+        filetype = 'jpg';
+      }
+      cb(null, req.params.uuid + '.' + filetype);
+    }
+});
+const upload = multer({storage: storage});
 
 // Send standardized response
 function sendResponse(response, status, error, result) {
@@ -129,6 +150,30 @@ module.exports = (app) => {
       if(results.affectedRows < 1) return sendResponse(response, 404, "User not found.", null);
       // All good
       sendResponse(response, 200, null, results);
+    });
+  });
+
+  // Upload avatar
+  app.post('/v1/users/:uuid/avatar', upload.single('file'), (request, response) => {
+    let data = request.file;
+    let fileUrl = process.env.AVATAR_PUBLIC_PATH + data.filename;
+    let sql = "UPDATE userdata SET avatar='"+fileUrl+"' WHERE uuid='"+request.params.uuid+"'";
+    let query = pool.query(sql, (error, results) => {
+      // Somethings wrong interally, has "code" when DB doesn't respond. Body of node error!
+      if(error) return sendResponse(response, 500, "Internal server error.", error);
+      // All good
+      sendResponse(response, 200, null, {'fileUrl': fileUrl});
+    });
+  });
+
+  // Get avatar file url
+  app.get('/v1/users/:uuid/avatar', (request, response) => {
+    let sql = "SELECT avatar FROM userdata WHERE uuid='"+request.params.uuid+"'";
+    let query = pool.query(sql, (error, results) => {
+      // Somethings wrong interally, has "code" when DB doesn't respond. Body of node error!
+      if(error) return sendResponse(response, 500, "Internal server error.", error);
+      // All good
+      sendResponse(response, 200, null, {'fileUrl': results[0].avatar});
     });
   });
 }

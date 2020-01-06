@@ -1,6 +1,4 @@
 const nodemailer = require('nodemailer');
-require('dotenv').config();
-
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -14,7 +12,7 @@ function sendEmailConfirmation(receiver, id, forname) {
     from: 'Webshop XYZ <infodsp.bot@gmail.com>',
     to: receiver,
     subject: 'Bestätige deine E-Mail!',
-    html: '<h3>Fast fertig, '+forname+'!</h3> Bestätige deine E-Mail mit einem Klick.<br><a href="https://api.bolte.cloud/v1/users/'+id+'/confirmEmail">Jetzt bestätigen.</a>'
+    html: '<h3>Fast fertig, '+forname+'!</h3> Bestätige deine E-Mail mit einem Klick.<br><a href="'+process.env.API_BASE_URL+'v1/users/'+id+'/confirmEmail">Jetzt bestätigen.</a>'
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
