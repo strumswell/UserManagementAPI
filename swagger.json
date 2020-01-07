@@ -450,6 +450,10 @@
         "name": "Orders"
       }
     }
+<<<<<<< Updated upstream
+=======
+	
+>>>>>>> Stashed changes
   },
   "externalDocs": {
     "description": "GitHub Repository of API",
