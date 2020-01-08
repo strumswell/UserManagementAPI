@@ -7,6 +7,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// Send Email confirmation
 function sendEmailConfirmation(receiver, id, forname) {
   var mailOptions = {
     from: 'Webshop XYZ <infodsp.bot@gmail.com>',
