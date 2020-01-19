@@ -21,9 +21,6 @@ var pool  = mysql.createPool({
     database : process.env.SQL_DATABASE
 });
 
-<<<<<<< Updated upstream
-// Return all orders
-=======
 // Return all Carts
 app.get('/v1/carts',(request, response) => {
   let sql = "SELECT * FROM carts";
