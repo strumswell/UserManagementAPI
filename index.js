@@ -21,7 +21,76 @@ var pool  = mysql.createPool({
     database : process.env.SQL_DATABASE
 });
 
+<<<<<<< Updated upstream
 // Return all orders
+=======
+// Return all Carts
+app.get('/v1/carts',(request, response) => {
+  let sql = "SELECT * FROM carts";
+  let query = pool.query(sql, (error, results) => {
+    //Somethings wrong interally
+    if(error) return sendResponse(response, 500, error, null);
+    // All good
+    sendResponse(response, 200, null, results);
+  });
+});
+
+// Return specific Carts from Order
+app.get('/v1/carts/:userid',(request, response) => {
+  let sql = "SELECT content FROM carts WHERE userid='"+request.params.userid+"'";
+  let query = pool.query(sql, (error, results) => {
+    //Somethings wrong interally
+    if(error) return sendResponse(response, 500, error, null);
+    // All good
+    sendResponse(response, 200, null, results);
+  });
+});
+
+// Update specific Cart 
+app.put('/v1/carts/:userid',(request, response) => {
+  let data = request.body;
+  data.content = JSON.stringify(data.content[0]);
+  let sql = "UPDATE carts SET ? WHERE userid='"+request.params.userid+"'";
+  let query = pool.query(sql, data,(error, results) => {
+    // Missing or wrong attributes used
+    if(error) return sendResponse(response, 400, error.sqlMessage, null);
+    // Id is unkown and no changes were made
+    if(results.affectedRows < 1) return sendResponse(response, 404, "Cart not found.", null);
+    // All good
+    sendResponse(response, 200, null, results.message);
+  });
+});
+
+// Create new Cart
+app.post('/v1/carts/:userid',(request, response) => {
+  let data = request.body;
+  data.userid = request.params.userid;
+  data.content = JSON.stringify(data.content[0]);
+  let sql = "INSERT INTO carts SET ?";
+  let query = pool.query(sql, data,(error, results) => {
+    // Missing or wrong attributes used
+    if(error) return sendResponse(response, 400, error, null);
+    // All good
+    sendResponse(response, 200, null, results);
+  });
+});
+
+// Delete specific content in Cart
+app.delete('/v1/carts/:userid',(request, response) => {
+  let sql = "DELETE FROM carts WHERE userid='"+request.params.userid+"'";
+  let query = pool.query(sql, (error, results) => {
+    //Somethings wrong interally
+    console.log(results);
+    if(error) return sendResponse(response, 500, error.sqlMessage, null);
+    // Id is unkown and no changes were made
+    if(results.affectedRows < 1) return sendResponse(response, 404, "User not found.", null);
+    // All good
+    sendResponse(response, 200, null, results);
+  });
+});
+
+// Return all Orders
+>>>>>>> Stashed changes
 app.get('/v1/orders',(request, response) => {
   let sql = "SELECT * FROM orders";
   let query = pool.query(sql, (error, results) => {
