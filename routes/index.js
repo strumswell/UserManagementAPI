@@ -4,7 +4,7 @@ function sendResponse(response, status, error, result) {
 }
 
 module.exports = (app) => {
-  // Standard route
+  // Serving unknown routes
   app.use('/', (request, response) => {
     response.send("Woah, what are you trying to do? You can find the documentation @ "+process.env.API_BASE_URL+"docs if you have no clue what you are doing.");
   });
