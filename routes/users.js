@@ -154,9 +154,9 @@ module.exports = (app) => {
   });
 
   // Upload avatar
-  app.post('/v1/users/:uuid/avatar', upload.single('file'), (request, response) => {
-    let data = request.file;
-    let fileUrl = process.env.AVATAR_PUBLIC_PATH + data.filename;
+  app.post('/v1/users/:uuid/avatar', upload.any(), (request, response) => {
+    let data = request.files;
+    let fileUrl = process.env.AVATAR_PUBLIC_PATH + data[0].filename;
     let sql = "UPDATE userdata SET avatar='"+fileUrl+"' WHERE uuid='"+request.params.uuid+"'";
     let query = pool.query(sql, (error, results) => {
       // Somethings wrong interally, has "code" when DB doesn't respond. Body of node error!
